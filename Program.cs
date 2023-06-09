@@ -1,83 +1,62 @@
-﻿using EspacioTarea;
+﻿
 using System.IO;
 internal class Program
 {
     private static void Main(string[] args)
     {
-        Random random = new Random();
-        int cantidadTareas = random.Next(1, 10);
-        List<Tarea> listaTareasPendientes = new List<Tarea>();
-        List<Tarea> listaTareasRealizadas = new List<Tarea>();
+
+        string? path = @"C:\Users\WINDOWS 10\Desktop\RollinCode-Grupo5\html";
+        
+        var listaArchivos = new List<string>();
+
+        try{
+            listaArchivos= obtenerDirectorio(path,listaArchivos);
+            escribirArchivo(path,listaArchivos);
+            
+        }catch(DirectoryNotFoundException){
+            Console.WriteLine("ERROR: no se encontro directorio con ese nombre");
+        }
 
 
-        for (int i = 0; i < cantidadTareas ; i++)
+
+    }
+
+    static List<string> obtenerDirectorio(string path, List<string> listaArchivos){
+        string? nombre = "";
+
+        foreach (var archivo in Directory.GetFiles(path))
         {
-            Tarea nuevaTarea = new Tarea(i+1, $"descripcion de la tarea{i}",random.Next(10,101));
-            listaTareasPendientes.Add(nuevaTarea);
+            nombre = archivo.ToString().Split(@"\").Last();
+            listaArchivos.Add(nombre);
+            Console.WriteLine(nombre);
         }
-
-        mostrarListaTareas(listaTareasPendientes);
-
-        // int respuesta;
-
-
-    //     foreach( var tareaIndividual in listaTareasPendientes ){
-    //         Console.WriteLine(tareaIndividual.mostrarTarea());
-    //         Console.WriteLine("Desea mover la tarea a pendiente");
-    //         Console.WriteLine("Ingrese un número:");
-    //         string? input = Console.ReadLine();
-
-    //     if (int.TryParse(input, out  respuesta))
-    //     {
-    //         if(respuesta == 1){
-    //             listaTareasRealizadas.Add(tareaIndividual);
-    //             listaTareasPendientes.Remove(tareaIndividual);
-    //         }else{
-    //             continue;
-    //         }
-    //     }
-    //     else
-    //     {
-    //         Console.WriteLine("El valor ingresado no es válido.");
-    //     }
-    // }
-
-    //     foreach( var tarea in listaTareasRealizadas){
-    //         listaTareasPendientes.Remove(tarea);
-    //     }
-
-    // interfaz buscar por descripcion 
-    // Console.Write("tareaaaaa buscadaa");
-    // string? desc = "descripcion de la tarea0";
-    // foreach (var tarea in listaTareasPendientes)
-    // {
-    //     if(string.Compare(tarea.Descripcion,desc) == 0){
-    //         Console.WriteLine(tarea.mostrarTarea());
-    //     }
-    // }
-
-    int suma = 0 ; 
-        foreach (var tarea in listaTareasPendientes)
-    {
-        suma += tarea.Duracion;    
+        return listaArchivos;
     }
 
-    FileStream archivo = new FileStream("nuevo.txt", FileMode.Create);
-    StreamWriter sr = new StreamWriter(archivo);
-    sr.WriteLine(suma);
-    sr.Close();
-    archivo.Close();
+    static void escribirArchivo(string path, List<string> listaArchivos) {
+        int i = 1;
+        string? nombreArchivo = "";
+        string? extencion = "";
+        string? linea = "";
+        // StreamWriter sr = new StreamWriter(path + @"/index.csv", true);
+        StreamWriter sr = new StreamWriter(@"./index.csv", true);
 
+        foreach (var archivo in listaArchivos)
+            {
+                nombreArchivo = archivo.Split(".")[0];
+                extencion = archivo.Split(".")[1];
+                linea=$"{i};{nombreArchivo};{extencion}";
+                sr.WriteLine(linea);
+                i++;
 
-
-    }
-        static void  mostrarListaTareas(List<Tarea> lista){
-            foreach( var tareaIndividual in lista ){
-                Console.WriteLine($"ID:{tareaIndividual.TareaID} \n desc: {tareaIndividual.Descripcion} \n duracion: {tareaIndividual.Duracion}" );
             }
-        }
 
-
+        sr.Close();
+    }
 
 }
 
+// Por consola ingrese el path de una carpeta en particular y liste los archivos de la misma por
+// consola. A continuación guarde en un archivo csv (archivos separados por comas) llamado
+// “index.csv” el listado de archivos encontrados, con el formato correspondiente: primer campo
+// índice, 2do campo nombre del archivo, 3ro extensión del mismo.
